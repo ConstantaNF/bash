@@ -1,0 +1,17 @@
+# Сортировка по цифрам 
+cat /var/log/nginx/access.log | cut -d ' ' -f1 | sort -g | uniq -c | sort -gr | sed 's/^[ ^t]*//'
+
+# Сортировка по URL
+cat /var/log/nginx/access.log | awk '{print $11}' | sort -gr | uniq -c | sort -gr | sed 's/^[ ^t]*//'
+
+# Список всех кодов HTTP ответа
+cat /var/log/nginx/access.log | awk '{print $9}' | sort -gr | uniq -c | sort -gr | sed 's/^[ ^t]*//'
+
+# Строки с ошибкой сервера/приложения
+cat /var/log/nginx/access.log | awk '$9 ~ /400|403|405|499|500/' 
+
+# Замена даты в логе
+sed -e 's/14\/Aug\/2019/15\/May\/2024/g; s/15\/Aug\/2019/16\/May\/2024/g' ~/Загрузки/access-4560-644067.log > access.log
+
+# Вывести дату доступа к файлу
+stat script.sh | awk 'FNR==5 {print $2 $3}'
