@@ -7,25 +7,29 @@ if [ -f /vagrant/script.pid ]; then
 fi
 touch /vagrant/script.pid
 
+# Объявление переменных
+lastd=$(cat /vagrant/lastrun)
+nowd=$(LANG=C date +%d/%b/%y:%H:%M:%S)
+
 # Объявление функций
 function sortip {
-  echo "Список IP адресов с наибольшим количеством запросов и указанием их количества"
+  echo "Список IP адресов с наибольшим количеством запросов и указанием их количества за период с $lastd по $nowd"
 }
 
 function sorturl {
-  echo "Список запрашиваемых URL с наибольшим количеством запросов и указанием их количества"
+  echo "Список запрашиваемых URL с наибольшим количеством запросов и указанием их количества за период с $lastd по $nowd"
 }
 
 function allcode {
-  echo "Список всех кодов HTTP ответа с указанием их кол-ва"
+  echo "Список всех кодов HTTP ответа с указанием их кол-ва за период с $lastd по $nowd"
 }
 
 function err {
-  echo "Ошибки веб-сервера/приложения"
+  echo "Ошибки веб-сервера/приложения за период с $lastd по $nowd"
 }
 
 function line {
-  echo "====================================================================================" 
+  echo "================================================================================================================" 
 }
 
 function string {
@@ -40,11 +44,6 @@ line >> access_report
 string >> access_report
 
 # Сортировка по IP:
-# объявление переменных
-lastd=$(cat /vagrant/lastrun)
-nowd=$(LANG=C date +%d/%b/%y:%H:%M:%S)
-
-# сортировка
 cat /vagrant/access.log | sed 's/\[//g' | awk -v last_run="$lastd" -v Now="$nowd" '$4 > last_run && $4 < Now {print $1}' | sort -g | uniq -c | sort -gr | sed 's/^[ ^t]*//' | \
 head -n20 >> access_report
 
@@ -54,7 +53,7 @@ line >> access_report
 string >> access_report
 
 # Сортировка по URL
-cat /vagrant/access.log | awk '{print $11}' | sort -gr | uniq -c | sort -gr | sed 's/^[ ^t]*//' >> access_report
+cat /vagrant/access.log | sed 's/\[//g' | awk -v last_run="$lastd" -v Now="$nowd" '$4 > last_run && $4 < Now {print $11}' | sort -gr | uniq -c | sort -gr | sed 's/^[ ^t]*//' | head -n20 >> access_report
 
 string >> access_report
 allcode >> access_report
@@ -62,7 +61,7 @@ line >> access_report
 string >> access_report
 
 # Список всех кодов HTTP ответа
-cat /vagrant/access.log | awk '{print $9}' | sort -gr | uniq -c | sort -gr | sed 's/^[ ^t]*//' >> access_report
+cat /vagrant/access.log | sed 's/\[//g' | awk -v last_run="$lastd" -v Now="$nowd" '$4 > last_run && $4 < Now {print $9}' | sort -gr | uniq -c | sort -gr | sed 's/^[ ^t]*//' >> access_report
 
 string >> access_report
 err >> access_report
@@ -70,7 +69,7 @@ line >> access_report
 string >> access_report
 
 # Строки с ошибкой сервера/приложения
-cat /vagrant/access.log | awk '$9 ~ /400|403|405|499|500/' >> access_report
+cat /vagrant/access.log | awk '$9 ~ /400|403|405|499|500/' | sed 's/\[//g' | awk -v last_run="$lastd" -v Now="$nowd" '$4 > last_run && $4 < Now {print $0}' >> access_report
 
 # Контроль времени запуска скрипта
 LANG=C date +%d/%b/%y:%H:%M:%S > lastrun
