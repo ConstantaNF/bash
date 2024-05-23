@@ -56,3 +56,8 @@ HOME=/vagrant
 @hourly ~/script.sh && cat access_report | mail -s "Access_report" konstantin.kanischev@yandex.ru
 ```
 
+Результат:
+
+![изображение](https://github.com/ConstantaNF/bash/assets/162187256/acd00868-3dcf-4bfc-935a-458f8e6ba04d)
+
+
