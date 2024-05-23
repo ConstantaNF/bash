@@ -9,7 +9,7 @@ touch /vagrant/script.pid
 
 # Объявление переменных
 lastd=$(cat /vagrant/lastrun)
-nowd=$(LANG=C date +%d/%b/%y:%H:%M:%S)
+nowd=$(LANG=C date +%d/%b/%Y:%H:%M:%S)
 
 # Объявление функций
 function sortip {
@@ -29,7 +29,7 @@ function err {
 }
 
 function line {
-  echo "================================================================================================================" 
+  echo "=================================================================================================================" 
 }
 
 function string {
@@ -44,8 +44,7 @@ line >> access_report
 string >> access_report
 
 # Сортировка по IP:
-cat /vagrant/access.log | sed 's/\[//g' | awk -v last_run="$lastd" -v Now="$nowd" '$4 > last_run && $4 < Now {print $1}' | sort -g | uniq -c | sort -gr | sed 's/^[ ^t]*//' | \
-head -n20 >> access_report
+cat /vagrant/access.log | sed 's/\[//g' | awk -v Lastd="$lastd" -v Nowd="$nowd" '$4 > Lastd && $4 < Nowd {print $1}' | sort -g | uniq -c | sort -gr | sed 's/^[ ^t]*//' | head -n20 >> access_report
 
 string >> access_report
 sorturl >> access_report
@@ -53,7 +52,7 @@ line >> access_report
 string >> access_report
 
 # Сортировка по URL
-cat /vagrant/access.log | sed 's/\[//g' | awk -v last_run="$lastd" -v Now="$nowd" '$4 > last_run && $4 < Now {print $11}' | sort -gr | uniq -c | sort -gr | sed 's/^[ ^t]*//' | head -n20 >> access_report
+cat /vagrant/access.log | sed 's/\[//g' | awk -v Lastd="$lastd" -v Nowd="$nowd" '$4 > Lastd && $4 < Nowd {print $11}' | sort -gr | uniq -c | sort -gr | sed 's/^[ ^t]*//' | head -n20 >> access_report
 
 string >> access_report
 allcode >> access_report
@@ -61,7 +60,7 @@ line >> access_report
 string >> access_report
 
 # Список всех кодов HTTP ответа
-cat /vagrant/access.log | sed 's/\[//g' | awk -v last_run="$lastd" -v Now="$nowd" '$4 > last_run && $4 < Now {print $9}' | sort -gr | uniq -c | sort -gr | sed 's/^[ ^t]*//' >> access_report
+cat /vagrant/access.log | sed 's/\[//g' | awk -v Lastd="$lastd" -v Nowd="$nowd" '$4 > Lastd && $4 < Nowd {print $9}' | sort -gr | uniq -c | sort -gr | sed 's/^[ ^t]*//' >> access_report
 
 string >> access_report
 err >> access_report
@@ -69,10 +68,10 @@ line >> access_report
 string >> access_report
 
 # Строки с ошибкой сервера/приложения
-cat /vagrant/access.log | awk '$9 ~ /400|403|405|499|500/' | sed 's/\[//g' | awk -v last_run="$lastd" -v Now="$nowd" '$4 > last_run && $4 < Now {print $0}' >> access_report
+cat /vagrant/access.log | awk '$9 ~ /400|403|405|499|500/' | sed 's/\[//g' | awk -v Lastd="$lastd" -v Nowd="$nowd" '$4 > Lastd && $4 < Nowd {print $0}' >> access_report
 
 # Контроль времени запуска скрипта
-LANG=C date +%d/%b/%y:%H:%M:%S > lastrun
+LANG=C date +%d/%b/%Y:%H:%M:%S > lastrun
 
 # Контроль активности скрипта
 rm /vagrant/script.pid
